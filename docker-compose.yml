@@ -1,0 +1,85 @@
+services:
+  db:
+    image: "postgres:18-alpine"
+    environment:
+      - POSTGRES_USER=about-time
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=about-time
+    ports:
+      - "5432"
+    volumes:
+      - dbdata:/var/lib/postgresql/data:delegated
+
+  ## PgAdmin Database Management
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin4
+    restart: unless-stopped
+    networks:
+      - backend-network
+    ports:
+      - "8888:80" # Host:8888 -> Container:80 (standard PgAdmin port inside)
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_USER:-admin@admin.com}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin_password}
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    depends_on:
+      - db
+
+  broker:
+    image: "rabbitmq:alpine"
+
+  result:
+    image: "redis:alpine"
+    ports:
+    - "6379:6379"
+
+  frontend:
+    build:
+      dockerfile: frontend/Dockerfile
+      context: .
+    volumes:
+      - .:/app/
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+
+  backend:
+    build:
+      dockerfile: backend/Dockerfile
+      context: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./:/home/user/app/
+    env_file: backend/.env
+    depends_on:
+      - db
+      - broker
+      - result
+      - frontend
+
+  celery:
+    build:
+      dockerfile: backend/Dockerfile
+      context: .
+    command: celery --app=about-time worker --loglevel=info
+    volumes:
+      - ./:/home/user/app/
+    env_file: backend/.env
+    depends_on:
+      - db
+      - broker
+      - result
+
+  mailhog: # service for faking a SMTP server
+    image: mailhog/mailhog
+    ports:
+      - '1025:1025' # smtp server
+      - '8025:8025' # web ui
+
+volumes:
+  dbdata:
+    name: about-time_dbdata
+    external: true

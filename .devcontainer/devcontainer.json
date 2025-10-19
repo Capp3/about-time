@@ -1,0 +1,126 @@
+{
+  "name": "Rota Round Development",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+
+  // TRUE Docker-in-Docker configuration with network isolation
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {
+      "version": "latest",
+      "enableNonRootDocker": true,
+      "moby": true,
+      "installDockerBuildx": true,
+      "installDockerCompose": true
+    }
+  },
+
+  // Configure tool-specific properties
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        // Python development
+        "charliermarsh.ruff",
+        "anysphere.cursorpyright",
+        "ms-python.debugpy",
+
+        // Django development
+        "batisteo.vscode-django",
+
+        // Docker support
+        "ms-azuretools.vscode-docker",
+
+        // Git and version control
+        "eamodio.gitlens",
+        "github.vscode-pull-request-github",
+
+        // Database tools
+        "cweijan.vscode-postgresql-client2",
+
+        // General development
+        "redhat.vscode-yaml",
+        "bradlc.vscode-tailwindcss",
+        "esbenp.prettier-vscode",
+        "ms-vscode.vscode-json",
+        "bierner.markdown-mermaid",
+        "esbenp.prettier-vscode",
+        "gruntfuggly.todo-tree"
+      ],
+      "settings": {
+        "remote.autoForwardPorts": false,
+        // Python settings
+        "python.defaultInterpreterPath": "/workspace/.venv/bin/python",
+        "python.testing.pytestEnabled": true,
+        "python.testing.unittestEnabled": false,
+
+        // Ruff settings (replaces black, flake8, isort)
+        "ruff.enable": true,
+        "ruff.organizeImports": true,
+        "ruff.fixAll": true,
+        "ruff.lint.enable": true,
+        "ruff.format.enable": true,
+        "[python]": {
+          "editor.defaultFormatter": "charliermarsh.ruff",
+          "editor.formatOnSave": true,
+          "editor.codeActionsOnSave": {
+            "source.fixAll.ruff": "explicit",
+            "source.organizeImports.ruff": "explicit"
+          }
+        },
+
+        // Basedpyright settings (type checking)
+        "basedpyright.enable": true,
+        "python.analysis.typeCheckingMode": "basic",
+        "python.analysis.autoImportCompletions": true,
+
+        // Django settings
+        "python.analysis.extraPaths": ["/workspace/backend"],
+
+        // Editor settings
+        "editor.formatOnSave": true,
+
+        // File associations
+        "files.associations": {
+          "*.env*": "dotenv"
+        }
+      }
+    }
+  },
+
+  // Forward only GUI services - backend services remain isolated
+  "appPort": ["3333:3000", "8888:8888"],
+
+  // Use 'postCreateCommand' to run commands after the container is created
+  "postCreateCommand": "bash .devcontainer/post-create.sh",
+
+  // Use 'postStartCommand' to run commands after the container starts
+  "postStartCommand": "echo 'Dev container is ready! Run: docker compose up -d'",
+
+  // Comment out to connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root
+  "remoteUser": "vscode",
+
+  // Mount the workspace
+  "workspaceFolder": "/workspace",
+
+  // Mount SSH directory for git operations and ensure workspace is mounted
+  "mounts": [
+    "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
+    "source=${localEnv:HOME}/.ssh,target=/home/vscode/.ssh,type=bind,consistency=cached,readonly"
+  ],
+
+  // TRUE Docker-in-Docker - no socket binding, complete isolation
+  // Backend services run in isolated Docker network
+  "containerEnv": {
+    "DOCKER_BUILDKIT": "1",
+    "COMPOSE_DOCKER_CLI_BUILD": "1"
+  },
+
+  // Run arguments
+  "runArgs": ["--init"],
+
+  // Lifecycle scripts
+  "initializeCommand": "echo 'Initializing Rota Round dev container...'",
+  "onCreateCommand": "echo 'Creating development environment...'",
+  "updateContentCommand": "echo 'Updating container content...'",
+  "postAttachCommand": "echo 'Welcome to Rota Round development environment!'"
+}

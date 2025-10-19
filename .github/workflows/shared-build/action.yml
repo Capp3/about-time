@@ -1,0 +1,189 @@
+name: "Shared Build Steps"
+description: "Shared build steps for main and nightly"
+
+outputs:
+  branch:
+    description: "Branch name"
+  sha_short:
+    description: "Short SHA of HEAD"
+  SECRET_KEY:
+    description: "Generated Django secret key"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Store branch and latest SHA
+      id: vars
+      shell: bash
+      run: |
+        echo "branch=$(echo ${GITHUB_REF#refs/heads/})" >> $GITHUB_OUTPUT
+        echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.12"
+
+    - name: Install pnpm
+      uses: pnpm/action-setup@41ff72655975bd51cab0327fa583b6e92b6d3061 # v4.2.0
+      with:
+        run_install: false
+
+    - name: Verify pnpm is available
+      shell: bash
+      run: |
+        which pnpm
+        pnpm --version
+
+    - name: Setup Node (with pnpm cache)
+      uses: actions/setup-node@v4
+      with:
+        node-version: "20.13"
+        cache: "pnpm"
+
+    - name: Cache pnpm store
+      uses: actions/cache@v4
+      env:
+        cache-name: pnpm-store-cache
+      with:
+        path: ~/.pnpm-store
+        key: build-${{ env.cache-name }}-${{ steps.vars.outputs.branch }}-${{ steps.vars.outputs.sha_short }}
+        restore-keys: |
+          build-${{ env.cache-name }}-${{ steps.vars.outputs.branch }}
+          build-${{ env.cache-name }}
+
+    - name: Cache pip
+      uses: actions/cache@v4
+      env:
+        cache-name: pip-cache
+      with:
+        path: ~/.cache/pip
+        key: build-${{ env.cache-name }}-${{ steps.vars.outputs.branch }}-${{ steps.vars.outputs.sha_short }}
+        restore-keys: |
+          build-${{ env.cache-name }}-${{ steps.vars.outputs.branch }}
+          build-${{ env.cache-name }}
+
+    - run: python -m pip install --upgrade pip
+      shell: bash
+
+    - name: Install Django
+      run: pip install "django>=5,<6"
+      shell: bash
+
+    - name: Setup testproject
+      run: django-admin startproject testproject --extension py,json,yml,yaml,toml --name Dockerfile,README.md,.env.example,.gitignore,Makefile,.npmrc --template=.
+      shell: bash
+
+    - name: Install JS dependencies
+      run: pnpm install --frozen-lockfile
+      working-directory: testproject
+      shell: bash
+
+    - name: Deduplicate JS dependencies
+      run: pnpm dedupe
+      working-directory: testproject
+      shell: bash
+
+    - name: Install Poetry
+      run: pip install poetry==2.0.1 --upgrade
+      working-directory: testproject
+      shell: bash
+
+    - name: Poetry install (backend)
+      run: poetry install --with dev --no-root --no-interaction --no-ansi
+      working-directory: testproject
+      shell: bash
+
+    - name: Copy local settings template
+      run: cp testproject/settings/local.py.example testproject/settings/local.py
+      working-directory: testproject/backend
+      shell: bash
+
+    - name: Copy .env example
+      run: cp .env.example .env
+      working-directory: testproject/backend
+      shell: bash
+
+    - name: Django makemigrations
+      run: poetry run python manage.py makemigrations
+      working-directory: testproject/backend
+      env:
+        DATABASE_URL: "sqlite:///"
+      shell: bash
+
+    - name: Django migrate
+      run: poetry run python manage.py migrate
+      working-directory: testproject/backend
+      env:
+        DATABASE_URL: "sqlite:///"
+      shell: bash
+
+    - name: Generate backend schema
+      run: poetry run python manage.py spectacular --color --file schema.yml
+      working-directory: testproject/backend
+      env:
+        DATABASE_URL: "sqlite:///"
+      shell: bash
+
+    - name: Generate frontend API client
+      run: pnpm run openapi-ts
+      working-directory: testproject
+      shell: bash
+
+    - name: Lint frontend
+      run: pnpm run lint
+      working-directory: testproject
+      shell: bash
+
+    - name: Build frontend
+      run: pnpm run build
+      working-directory: testproject
+      shell: bash
+
+    - name: Test frontend
+      run: pnpm run test
+      working-directory: testproject
+      shell: bash
+
+    - name: Test backend
+      run: poetry run python manage.py test
+      working-directory: testproject/backend
+      env:
+        DATABASE_URL: "sqlite:///"
+      shell: bash
+
+    - name: Generate secret key
+      id: secret-id-generator
+      shell: bash
+      run: |
+        secret=$(python -c "import uuid; print(uuid.uuid4().hex + uuid.uuid4().hex)")
+        echo "SECRET_KEY=$secret" >> $GITHUB_OUTPUT
+
+    - name: Remove .gitignore to prevent ruff conflict
+      run: rm .gitignore
+      shell: bash
+
+    - name: Lint backend with ruff
+      run: poetry run ruff check .
+      working-directory: testproject/backend
+      shell: bash
+
+    - name: Check migrations (dry run)
+      run: poetry run python manage.py makemigrations --check --dry-run
+      working-directory: testproject/backend
+      env:
+        DATABASE_URL: "sqlite:///"
+      shell: bash
+
+    - name: Django deploy checks
+      run: poetry run python manage.py check --deploy --fail-level WARNING
+      working-directory: testproject/backend
+      env:
+        SECRET_KEY: ${{ steps.secret-id-generator.outputs.SECRET_KEY }}
+        SENDGRID_USERNAME: foo
+        SENDGRID_PASSWORD: password
+        DJANGO_SETTINGS_MODULE: "testproject.settings.production"
+        ALLOWED_HOSTS: ".example.org"
+        REDIS_URL: "redis://"
+        DATABASE_URL: "sqlite:///"
+      shell: bash

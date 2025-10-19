@@ -1,0 +1,29 @@
+# Docker Compose override for development container
+# This file extends the main compose.yml for development purposes
+
+name: rota-round
+# services:
+# Development-specific configurations can be added here
+# For example, if you want to override the Django service when it's added:
+
+# django:
+#   volumes:
+#     - .:/app  # Mount source code for live reload
+#   environment:
+#     - DJANGO_DEBUG=True
+#     - DJANGO_SETTINGS_MODULE=rota_round.settings.development
+#   ports:
+#     - "8000:8000"
+
+# postgres:
+#   environment:
+#     - POSTGRES_DB=rota_round_dev
+#   volumes:
+#     - ./dev-data:/var/lib/postgresql/data  # Use local dev data
+
+# redis:
+#   volumes:
+#     - redis-dev-data:/data
+
+# volumes:
+#   redis-dev-data:
