@@ -30,6 +30,8 @@ RUN curl -fsSL https://deb.nodesource.com/setup_23.x -o nodesource_setup.sh && \
 
 RUN npm install -g npm
 
+RUN npm install --save-dev --save-exact prettier
+
 # Create a non-root user
 ARG USERNAME=vscode
 ARG USER_UID=1000

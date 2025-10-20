@@ -6,17 +6,17 @@ clean:
 	@find . -name "__pycache__" -delete
 
 test:
-	poetry run backend/manage.py test backend/ $(ARG) --parallel --keepdb
+	uv run backend/manage.py test backend/ $(ARG) --parallel --keepdb
 
 test_reset:
-	poetry run backend/manage.py test backend/ $(ARG) --parallel
+	uv run backend/manage.py test backend/ $(ARG) --parallel
 
 backend_format:
 	black backend
 
 # Commands for Docker version
 docker_setup:
-	docker volume create {{project_name}}_dbdata
+	docker volume create about-time_dbdata
 	docker compose build --no-cache backend frontend
 	docker compose run --rm backend python manage.py spectacular --color --file schema.yml
 	docker compose run --rm frontend pnpm run openapi-ts
