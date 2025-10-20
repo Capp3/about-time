@@ -23,6 +23,13 @@ RUN apt-get update && apt-get install -y \
     # Cleanup
     && rm -rf /var/lib/apt/lists/*
 
+RUN curl -fsSL https://deb.nodesource.com/setup_23.x -o nodesource_setup.sh && \
+    bash nodesource_setup.sh && \
+    apt-get install -y nodejs && \
+    rm -f nodesource_setup.sh
+
+RUN npm install -g npm
+
 # Create a non-root user
 ARG USERNAME=vscode
 ARG USER_UID=1000
