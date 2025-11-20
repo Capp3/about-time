@@ -217,7 +217,7 @@ importers:
         specifier: ~8.1.1
         version: 8.1.1(postcss@8.4.49)(typescript@5.9.3)(webpack@5.91.0)
       prettier:
-        specifier: ~3.2.5
+        specifier: 3.2.5
         version: 3.2.5
       react-refresh:
         specifier: ^0.14.2

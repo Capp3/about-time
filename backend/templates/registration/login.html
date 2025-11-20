@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - About Time</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+    <div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-md w-full space-y-8">
+            <div>
+                <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+                    Sign in to About Time
+                </h2>
+            </div>
+            <form class="mt-8 space-y-6" method="post" action="{% url 'login' %}">
+                {% csrf_token %}
+                
+                {% if form.errors %}
+                <div class="rounded-md bg-red-50 p-4">
+                    <div class="flex">
+                        <div class="ml-3">
+                            <h3 class="text-sm font-medium text-red-800">
+                                Authentication failed. Please check your credentials.
+                            </h3>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                
+                {% if next %}
+                    <input type="hidden" name="next" value="{{ next }}">
+                {% endif %}
+                
+                <div class="rounded-md shadow-sm -space-y-px">
+                    <div>
+                        <label for="id_username" class="sr-only">Email address</label>
+                        <input id="id_username" name="username" type="email" autocomplete="email" required 
+                               class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm" 
+                               placeholder="Email address">
+                    </div>
+                    <div>
+                        <label for="id_password" class="sr-only">Password</label>
+                        <input id="id_password" name="password" type="password" autocomplete="current-password" required 
+                               class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm" 
+                               placeholder="Password">
+                    </div>
+                </div>
+
+                <div>
+                    <button type="submit" 
+                            class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        Sign in
+                    </button>
+                </div>
+            </form>
+            
+            <div class="text-center">
+                <p class="text-sm text-gray-600">
+                    Session timeout: 4 hours
+                </p>
+                <p class="text-xs text-gray-500 mt-2">
+                    Default credentials: admin@abouttime.com / admin123
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

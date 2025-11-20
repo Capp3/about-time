@@ -59,7 +59,7 @@ MIDDLEWARE = [
     "django_guid.middleware.guid_middleware",
 ]
 
-ROOT_URLCONF = "{{project_name}}.urls"
+ROOT_URLCONF = "project_name.urls"
 
 TEMPLATES = [
     {
@@ -87,7 +87,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "{{project_name}}.wsgi.application"
+WSGI_APPLICATION = "project_name.wsgi.application"
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -186,6 +186,20 @@ COMMIT_SHA = config("RENDER_GIT_COMMIT", default="")
 # https://github.com/vintasoftware/safari-samesite-cookie-issue
 CSRF_COOKIE_SAMESITE = None
 SESSION_COOKIE_SAMESITE = None
+
+# Session Configuration
+SESSION_ENGINE = "django.contrib.sessions.backends.db"
+SESSION_COOKIE_AGE = 14400  # 4 hours in seconds
+SESSION_SAVE_EVERY_REQUEST = True  # Refresh session on every request
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_NAME = "sessionid"
+# SESSION_COOKIE_SECURE is set in production.py based on SECURE_SSL_REDIRECT
+
+# Login Configuration
+LOGIN_URL = "/login/"
+LOGIN_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = "/login/"
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

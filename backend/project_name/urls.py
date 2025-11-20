@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.urls import include, path
+from django.contrib.auth import views as auth_views
 
 import django_js_reverse.views
 from common.routes import routes as common_routes
@@ -22,6 +23,11 @@ urlpatterns = [
     path("", include("common.urls"), name="common"),
     path("admin/", admin.site.urls, name="admin"),
     path("admin/defender/", include("defender.urls")),
+    
+    # Authentication URLs
+    path("login/", auth_views.LoginView.as_view(), name="login"),
+    path("logout/", auth_views.LogoutView.as_view(), name="logout"),
+    
     path("jsreverse/", django_js_reverse.views.urls_js, name="js_reverse"),
     path("api/", include(router.urls), name="api"),
     # drf-spectacular

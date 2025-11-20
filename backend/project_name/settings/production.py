@@ -23,19 +23,28 @@ MEDIA_URL = "/media/"
 SERVER_EMAIL = "foo@example.com"
 
 EMAIL_HOST = "smtp.sendgrid.net"
-EMAIL_HOST_USER = config("SENDGRID_USERNAME")
-EMAIL_HOST_PASSWORD = config("SENDGRID_PASSWORD")
+EMAIL_HOST_USER = config("SENDGRID_USERNAME", default="")
+EMAIL_HOST_PASSWORD = config("SENDGRID_PASSWORD", default="")
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
 # Security
-SECURE_HSTS_PRELOAD = True
+# Disable SSL redirect for local development
+SECURE_SSL_REDIRECT = config("SECURE_SSL_REDIRECT", default=False, cast=bool)
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
-SECURE_SSL_REDIRECT = True
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
-SECURE_HSTS_SECONDS = config("SECURE_HSTS_SECONDS", default=3600, cast=int)
-SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+
+# Only enable strict HTTPS settings if SSL redirect is enabled
+if SECURE_SSL_REDIRECT:
+    SECURE_HSTS_PRELOAD = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_HSTS_SECONDS = config("SECURE_HSTS_SECONDS", default=3600, cast=int)
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+else:
+    # Development mode - allow HTTP
+    SECURE_HSTS_PRELOAD = False
+    SECURE_HSTS_SECONDS = 0
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = False
 
 SECURE_CONTENT_TYPE_NOSNIFF = True
 SECURE_BROWSER_XSS_FILTER = True

@@ -15,8 +15,6 @@ services:
     image: dpage/pgadmin4
     container_name: pgadmin4
     restart: unless-stopped
-    networks:
-      - backend-network
     ports:
       - "8888:80" # Host:8888 -> Container:80 (standard PgAdmin port inside)
     environment:
@@ -64,7 +62,7 @@ services:
     build:
       dockerfile: backend/Dockerfile
       context: .
-    command: celery --app=about-time worker --loglevel=info
+    command: ["celery", "--app=about-time", "worker", "--loglevel=info"]
     volumes:
       - ./:/home/user/app/
     env_file: backend/.env
@@ -82,4 +80,7 @@ services:
 volumes:
   dbdata:
     name: about-time_dbdata
+    external: true
+  pgadmin-data:
+    name: about-time_pgadmin-data
     external: true

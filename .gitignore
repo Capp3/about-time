@@ -73,6 +73,9 @@ pip-delete-this-directory.txt
 .pybuilder/
 target/
 
+.history/*
+.history/
+
 # =============================================================================
 # TESTING & COVERAGE
 # =============================================================================
@@ -261,6 +264,9 @@ instance/
 # Celery
 celerybeat-schedule
 celerybeat.pid
+
+.pnpm-store/*
+.pnpm-store/
 
 # =============================================================================
 # JUPYTER & NOTEBOOKS

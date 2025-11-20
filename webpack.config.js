@@ -26,7 +26,13 @@ module.exports = (env, argv) => {
     devtool: "source-map",
     devServer: {
       hot: true,
-      historyApiFallback: true,
+      historyApiFallback: {
+        index: "/index.html",
+      },
+      static: {
+        directory: path.join(__dirname, "frontend"),
+        publicPath: "/",
+      },
       host: "0.0.0.0",
       port: 3000,
       // Allow CORS requests from the Django dev server domain:

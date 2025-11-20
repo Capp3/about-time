@@ -6,45 +6,35 @@ Welcome to the About Time documentation. This system provides employee time trac
 
 - [Product Requirements Document (PRD)](prd.md) - Detailed product specifications
 - [Project Brief](projectbrief.md) - Overview of project goals and structure
-- [Tasks](tasks.md) - Current task list and project status
+- [Architecture](architecture.md) - System architecture and design
+- [Technical Documentation](technical.md) - Technical decisions and standards
+- [Development Guide](development.md) - Setup, workflows, and development principles
+- [Status](status.md) - Current project status and progress
+- [Tasks](tasks.md) - Current task list and tracking
 
-## Planning Documentation
+## Reference Documentation
 
-- [Implementation Plan](implementation_plan.md) - Phased approach to development
-- [Development Principles](development_principles.md) - Core principles guiding our work
-- [Questions and Decisions Log](questions_and_decisions.md) - Tracking questions and decisions
-- [Feature Parking Lot](feature_parking_lot.md) - Features deferred to post-MVP
-- [Weekly Development Cycle](weekly_cycle.md) - Our weekly workflow process
+- [CSRF/CORS Configuration](csrf-cors.md) - Security configuration guide
 - [UV Package Management Guidelines](uv_guidelines.md) - Standards for Python dependency management
+- [Connectivity Test Results](connectivity-test-results.md) - Frontend-backend connectivity verification
 
-## Memory Bank
+## Planning & Tracking
 
-- [Product Context](memory_bank/productContext.md) - Overview of product features and business rules
-- [Technical Context](memory_bank/techContext.md) - Technical stack and architecture
-- [System Patterns](memory_bank/systemPatterns.md) - Code patterns and conventions
-- [Active Context](memory_bank/activeContext.md) - Current focus and implementation status
-- [Progress](memory_bank/progress.md) - Project progress tracking
-- [Tasks](memory_bank/tasks.md) - Memory bank task tracking
-- [Creative Decisions](memory_bank/creative_decisions/index.md) - Design decisions and architecture approaches
-
-## Development Guidelines
-
-- **Key Principles**:
-
-  1. Slow, deliberate development with thorough testing
-  2. Zero tolerance for feature creep
-  3. Always ask questions before implementing
-  4. Use UV for all Python package management
-
-- **Weekly Schedule**:
-  - Monday-Tuesday: Implementation
-  - Wednesday: Testing and review
-  - Thursday: Refinement and fixes
-  - Friday: Demo and planning
+- [Feature Parking Lot](feature_parking_lot.md) - Features deferred to post-MVP
+- [Questions and Decisions Log](questions_and_decisions.md) - Tracking questions and decisions
+- [Weekly Development Cycle](weekly_cycle.md) - Our weekly workflow process
 
 ## Getting Started
 
-1. Review the PRD and project brief
-2. Understand the implementation plan
-3. Follow the development principles
-4. Set up your environment using UV guidelines
+1. Review the [PRD](prd.md) and [Project Brief](projectbrief.md)
+2. Read the [Development Guide](development.md) for setup instructions
+3. Review [Architecture](architecture.md) and [Technical](technical.md) documentation
+4. Check [Status](status.md) and [Tasks](tasks.md) for current work
+5. Follow development principles outlined in the [Development Guide](development.md)
+
+## Quick Links
+
+- **Setup**: See [Development Guide - Initial Setup](development.md#initial-setup)
+- **Architecture**: See [Architecture Documentation](architecture.md)
+- **Current Work**: See [Tasks](tasks.md) and [Status](status.md)
+- **Package Management**: See [UV Guidelines](uv_guidelines.md)
