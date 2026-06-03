@@ -1,0 +1,63 @@
+################################################################################
+# Docker Compose configuration for About Time
+#
+################################################################################
+
+################################################################################
+# Networks
+################################################################################
+networks:
+  about-time-network:
+    driver: bridge
+
+################################################################################
+# Volumes
+################################################################################
+volumes:
+  dbdata:
+    driver: local
+  pgadmin-data:
+    driver: local
+
+################################################################################
+# Services
+################################################################################
+services:
+  ##############################################################################
+  # Database
+  ##############################################################################
+  db:
+    container_name: about-time-db
+    restart: unless-stopped
+    image: postgres:${POSTGRES_VERSION:-17-bookworm}
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER:-about-time}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-about-time}
+      - POSTGRES_DB=${POSTGRES_DB:-about-time}
+    networks:
+      - about-time-network
+    volumes:
+      - dbdata:/var/lib/postgresql/data:delegated
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER:-about-time}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  pgadmin:
+    container_name: about-time-pgadmin
+    restart: unless-stopped
+    image: dpage/pgadmin4
+    networks:
+      - about-time-network
+    ports:
+      - ${PGADMIN_PORT:-8080}:80
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@admin.com}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-about-time}
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    depends_on:
+      db:
+        condition: service_healthy
