@@ -29,7 +29,7 @@ services:
   db:
     container_name: about-time-db
     restart: unless-stopped
-    image: postgres:${POSTGRES_VERSION:-17-bookworm}
+    image: postgres:${POSTGRES_VERSION:-18-bookworm}
     environment:
       - POSTGRES_USER=${POSTGRES_USER:-about-time}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-about-time}
@@ -38,6 +38,8 @@ services:
       - about-time-network
     volumes:
       - dbdata:/var/lib/postgresql/data:delegated
+    ports:
+      - 5432:5432
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER:-about-time}"]
       interval: 10s

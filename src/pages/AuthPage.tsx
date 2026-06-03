@@ -1,5 +1,5 @@
 import { LoginForm, SignupForm } from "wasp/client/auth";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 
 export function LoginPage() {
   return (

@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { useAuth, logout } from "wasp/client/auth";
 
 export function NavBar() {

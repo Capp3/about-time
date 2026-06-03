@@ -1,11 +1,14 @@
-app BroadcastTimekeeper {
+app AboutTime {
   wasp: {
-    version: "^0.15.0"
+    version: "^0.23.0"
   },
-  title: "Broadcast Timekeeper",
+  title: "About Time",
   head: [
     "<link rel='stylesheet' href='https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap' />"
   ],
+  client: {
+    rootComponent: import App from "@src/App",
+  },
   auth: {
     userEntity: User,
     methods: {
@@ -21,6 +24,7 @@ app BroadcastTimekeeper {
 // ─────────────────────────────────────────────
 // ROUTES & PAGES
 // ─────────────────────────────────────────────
+route RootRoute { path: "/", to: LoginPage}
 
 route LoginRoute { path: "/login", to: LoginPage }
 page LoginPage {
