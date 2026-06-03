@@ -1,0 +1,32 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id           Int           @id @default(autoincrement())
+  username     String        @unique
+  fullName     String
+  role         String        @default("crew")   // "crew" | "admin"
+  department   String?                           // e.g. "camera", "audio", "lighting"
+  punchRecords PunchRecord[]
+}
+
+model PunchRecord {
+  id         Int       @id @default(autoincrement())
+  userId     Int
+  user       User      @relation(fields: [userId], references: [id])
+  clockIn    DateTime
+  clockOut   DateTime?
+  note       String?
+  jobCode    String?   // e.g. production name / shoot code
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@index([userId])
+  @@index([clockIn])
+}

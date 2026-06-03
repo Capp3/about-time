@@ -1,0 +1,99 @@
+app BroadcastTimekeeper {
+  wasp: {
+    version: "^0.15.0"
+  },
+  title: "Broadcast Timekeeper",
+  head: [
+    "<link rel='stylesheet' href='https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap' />"
+  ],
+  auth: {
+    userEntity: User,
+    methods: {
+      usernameAndPassword: {
+        userSignupFields: import { userSignupFields } from "@src/auth/signup"
+      }
+    },
+    onAuthFailedRedirectTo: "/login",
+    onAuthSucceededRedirectTo: "/dashboard"
+  }
+}
+
+// ─────────────────────────────────────────────
+// ROUTES & PAGES
+// ─────────────────────────────────────────────
+
+route LoginRoute { path: "/login", to: LoginPage }
+page LoginPage {
+  component: import { LoginPage } from "@src/pages/AuthPage"
+}
+
+route SignupRoute { path: "/signup", to: SignupPage }
+page SignupPage {
+  component: import { SignupPage } from "@src/pages/AuthPage"
+}
+
+route DashboardRoute { path: "/dashboard", to: DashboardPage }
+page DashboardPage {
+  authRequired: true,
+  component: import { DashboardPage } from "@src/pages/DashboardPage"
+}
+
+route TimesheetRoute { path: "/timesheet", to: TimesheetPage }
+page TimesheetPage {
+  authRequired: true,
+  component: import { TimesheetPage } from "@src/pages/TimesheetPage"
+}
+
+route AdminRoute { path: "/admin", to: AdminPage }
+page AdminPage {
+  authRequired: true,
+  component: import { AdminPage } from "@src/pages/AdminPage"
+}
+
+// ─────────────────────────────────────────────
+// QUERIES
+// ─────────────────────────────────────────────
+
+query getMyPunches {
+  fn: import { getMyPunches } from "@src/queries/punchQueries",
+  entities: [PunchRecord]
+}
+
+query getAllPunchesAdmin {
+  fn: import { getAllPunchesAdmin } from "@src/queries/punchQueries",
+  entities: [PunchRecord, User]
+}
+
+query getCurrentStatus {
+  fn: import { getCurrentStatus } from "@src/queries/punchQueries",
+  entities: [PunchRecord]
+}
+
+query getReportData {
+  fn: import { getReportData } from "@src/queries/reportQueries",
+  entities: [PunchRecord, User]
+}
+
+// ─────────────────────────────────────────────
+// ACTIONS
+// ─────────────────────────────────────────────
+
+action clockIn {
+  fn: import { clockIn } from "@src/actions/punchActions",
+  entities: [PunchRecord]
+}
+
+action clockOut {
+  fn: import { clockOut } from "@src/actions/punchActions",
+  entities: [PunchRecord]
+}
+
+action deleteMyPunch {
+  fn: import { deleteMyPunch } from "@src/actions/punchActions",
+  entities: [PunchRecord]
+}
+
+action updatePunchAdmin {
+  fn: import { updatePunchAdmin } from "@src/actions/punchActions",
+  entities: [PunchRecord]
+}
