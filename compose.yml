@@ -54,7 +54,7 @@ services:
     environment:
       - TZ=${TZ:-UTC}
       - PUID=1000
-      - GUID=1000
+      - PGID=1000
     volumes:
       - ./logs:/var/logs
     # Built from the local Dockerfile; PUID/PGID align container user with host ids.
@@ -63,7 +63,7 @@ services:
       dockerfile: Dockerfile
       args:
         PUID: 1000
-        GUID: 1000
+        PGID: 1000
     # Wait for Postgres to pass its healthcheck before starting (avoids migration races).
     depends_on:
       db:
