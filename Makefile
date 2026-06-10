@@ -11,7 +11,7 @@ SHELL := /bin/bash
 
 ARG := $(word 2, $(MAKECMDGOALS) )
 
-.PHONY: help up down
+.PHONY: help up down build clean-build clean
 
 help: ## Show available commands
 	@echo "Available targets:"
@@ -26,3 +26,19 @@ down: ## Stop Docker services
 	@echo "[down] Stopping services..."
 	@docker compose down
 	@echo "[down] Services stopped"
+
+build: down ## Build Wasp Container
+	@echo "[build]Building Services..."
+	@docker compose build
+	@echo "[build]Services Built"
+
+clean-build: down ## Build Wasp Container
+	@echo "[build] Building Services..."
+	@docker compose build --no-cache --pull
+	@echo "[build]Services Built"
+
+clean: down ## Stop services and remove volumes, images, build cache
+	@echo "[clean] Pruning dangling images, build cache, and unused networks..."
+	@docker system prune --force
+	@docker builder prune --force
+	@echo "[clean] Cleanup complete"

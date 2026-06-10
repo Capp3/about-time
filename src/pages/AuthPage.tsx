@@ -5,7 +5,7 @@ export function LoginPage() {
   return (
     <div className="auth-wrapper">
       <div className="auth-card">
-        <h1 className="auth-title">Broadcast Timekeeper</h1>
+        <h1 className="auth-title">About Time</h1>
         <p className="auth-subtitle">Sign in to your account</p>
         <LoginForm />
         <p className="auth-switch">
@@ -20,7 +20,7 @@ export function SignupPage() {
   return (
     <div className="auth-wrapper">
       <div className="auth-card">
-        <h1 className="auth-title">Broadcast Timekeeper</h1>
+        <h1 className="auth-title">About Time</h1>
         <p className="auth-subtitle">Create your crew account</p>
         <SignupForm
           additionalFields={[

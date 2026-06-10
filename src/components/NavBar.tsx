@@ -9,7 +9,7 @@ export function NavBar() {
   return (
     <nav className="nav">
       <div className="nav-inner">
-        <Link to="/dashboard" className="nav-brand">Broadcast Timekeeper</Link>
+        <Link to="/dashboard" className="nav-brand">About Time</Link>
         <Link to="/dashboard"  className="nav-link">Dashboard</Link>
         <Link to="/timesheet"  className="nav-link">My Timesheet</Link>
         {isAdmin && <Link to="/admin" className="nav-link">Admin</Link>}

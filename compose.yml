@@ -16,30 +16,29 @@ networks:
 volumes:
   dbdata:
     driver: local
-  pgadmin-data:
-    driver: local
 
 ################################################################################
 # Services
 ################################################################################
 services:
-  ##############################################################################
-  # Database
-  ##############################################################################
   db:
     container_name: about-time-db
     restart: unless-stopped
     image: postgres:${POSTGRES_VERSION:-18-bookworm}
+    # Credentials fall back to dev defaults; override via .env for anything real.
     environment:
       - POSTGRES_USER=${POSTGRES_USER:-about-time}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-about-time}
       - POSTGRES_DB=${POSTGRES_DB:-about-time}
     networks:
       - about-time-network
+    # Named volume keeps data across container recreation (see `make clean` to wipe).
     volumes:
-      - dbdata:/var/lib/postgresql/data:delegated
+      - dbdata:/var/lib/postgresql:delegated
+    # Exposed on the host for local DB tooling; drop this in production.
     ports:
       - 5432:5432
+    # Gates the app's startup via the depends_on condition below.
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER:-about-time}"]
       interval: 10s
@@ -47,19 +46,26 @@ services:
       retries: 5
       start_period: 30s
 
-  pgadmin:
-    container_name: about-time-pgadmin
+  app:
+    container_name: about-time
     restart: unless-stopped
-    image: dpage/pgadmin4
     networks:
       - about-time-network
-    ports:
-      - ${PGADMIN_PORT:-8080}:80
     environment:
-      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@admin.com}
-      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-about-time}
+      - TZ=${TZ:-UTC}
+      - PUID=1000
+      - GUID=1000
     volumes:
-      - pgadmin-data:/var/lib/pgadmin
+      - ./logs:/var/logs
+    # Built from the local Dockerfile; PUID/PGID align container user with host ids.
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        PUID: 1000
+        GUID: 1000
+    # Wait for Postgres to pass its healthcheck before starting (avoids migration races).
     depends_on:
       db:
         condition: service_healthy
+
